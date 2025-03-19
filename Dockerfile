@@ -17,6 +17,8 @@ RUN cargo build --release --locked
 
 # Final image
 FROM gcr.io/distroless/cc-debian12:nonroot
+ENV TINI_VERSION=v0.19.0
+ADD --chmod=700 https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 COPY --from=builder /app/target/release/gitlab-tokens-exporter .
 EXPOSE 3000
-ENTRYPOINT [ "./gitlab-tokens-exporter" ]
+ENTRYPOINT [ "/tini", "--", "./gitlab-tokens-exporter" ]
