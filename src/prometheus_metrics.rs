@@ -15,21 +15,24 @@ pub fn build(token: Token) -> Result<String, Box<dyn Error + Send + Sync>> {
     let date_now = chrono::Utc::now().date_naive();
 
     let token_type = match token {
-        Token::Project(_, _) => "project",
-        Token::Group(_, _) => "group",
+        Token::Project(_, _, _) => "project",
+        Token::Group(_, _, _) => "group",
         Token::User(_, _) => "user",
     };
 
-    let (name, scopes, active, revoked, expires_at, access_level, path) = match token {
-        Token::Project(access_token, path) | Token::Group(access_token, path) => (
-            access_token.name,
-            access_token.scopes,
-            access_token.active,
-            access_token.revoked,
-            access_token.expires_at,
-            Some(access_token.access_level),
-            path,
-        ),
+    let (name, scopes, active, revoked, expires_at, access_level, path, web_url) = match token {
+        Token::Project(access_token, path, web_url) | Token::Group(access_token, path, web_url) => {
+            (
+                access_token.name,
+                access_token.scopes,
+                access_token.active,
+                access_token.revoked,
+                access_token.expires_at,
+                Some(access_token.access_level),
+                path,
+                Some(web_url),
+            )
+        }
         Token::User(pat, path) => (
             pat.name,
             pat.scopes,
@@ -38,6 +41,7 @@ pub fn build(token: Token) -> Result<String, Box<dyn Error + Send + Sync>> {
             pat.expires_at,
             None,
             path,
+            None,
         ),
     };
 
@@ -70,6 +74,10 @@ pub fn build(token: Token) -> Result<String, Box<dyn Error + Send + Sync>> {
 
     if let Some(val) = access_level {
         write!(metric_str, "access_level=\"{val}\",")?;
+    }
+
+    if let Some(val2) = web_url {
+        write!(metric_str, "web_url=\"{val2}\",")?;
     }
 
     writeln!(

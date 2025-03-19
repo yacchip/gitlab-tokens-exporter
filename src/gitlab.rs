@@ -62,6 +62,8 @@ pub struct Group {
     pub id: usize,
     /// Group path
     pub path: String,
+    /// Group web url
+    pub web_url: String,
 }
 
 #[expect(clippy::missing_trait_methods, reason = "we don't need it")]
@@ -144,6 +146,8 @@ pub struct Project {
     pub id: usize,
     /// Project path
     pub path_with_namespace: String,
+    /// Project web url
+    pub web_url: String,
 }
 
 #[expect(clippy::missing_trait_methods, reason = "we don't need it")]
@@ -154,9 +158,9 @@ impl OffsetBasedPagination<Self> for Project {}
 /// The second field is used to identify where a token comes from
 pub enum Token {
     /// Group token
-    Group(AccessToken, String),
+    Group(AccessToken, String, String),
     /// Project token
-    Project(AccessToken, String),
+    Project(AccessToken, String, String),
     /// User token
     User(PersonalAccessToken, String),
 }

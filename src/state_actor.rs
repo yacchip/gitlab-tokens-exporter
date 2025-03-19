@@ -112,7 +112,11 @@ async fn gitlab_get_data(
                 gitlab::AccessToken::get_all(&http_client_clone1, url, &gitlab_token_clone1)
                     .await?;
             for project_token in project_tokens {
-                let token = Token::Project(project_token, project.path_with_namespace.clone());
+                let token = Token::Project(
+                    project_token,
+                    project.path_with_namespace.clone(),
+                    project.web_url.clone(),
+                );
                 let token_metric_str = prometheus_metrics::build(token)?;
                 res.push_str(&token_metric_str);
             }
@@ -148,7 +152,7 @@ async fn gitlab_get_data(
                 gitlab::AccessToken::get_all(&http_client_clone2, url, &gitlab_token_clone2)
                     .await?;
             for group_token in group_tokens {
-                let token = Token::Group(group_token, group.path.clone());
+                let token = Token::Group(group_token, group.path.clone(), group.web_url.clone());
                 let token_metric_str = prometheus_metrics::build(token)?;
                 res.push_str(&token_metric_str);
             }
